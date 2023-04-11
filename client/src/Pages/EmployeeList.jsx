@@ -1,7 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Loading from "../Components/Loading";
 import EmployeeTable from "../Components/EmployeeTable";
-
 
 const fetchEmployees = () => {
   return fetch("/api/employees").then((res) => res.json());
@@ -16,10 +15,8 @@ const deleteEmployee = (id) => {
 const EmployeeList = () => {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState(null);
-
-  const searchedRef = useRef(null);
-  const filterRef = useRef(null);
-  const [searched, setSearched] = useState(null);
+  const [inputText, setInputText] = useState("");
+  const [copyEmployees, setCopyEmployees] = useState(null);
 
   const handleDelete = (id) => {
     deleteEmployee(id);
@@ -33,7 +30,7 @@ const EmployeeList = () => {
     fetchEmployees().then((employees) => {
       setLoading(false);
       setEmployees(employees);
-      setSearched(employees);
+      setCopyEmployees(employees);
     });
   }, []);
 
@@ -41,105 +38,71 @@ const EmployeeList = () => {
     return <Loading />;
   }
 
-  const searchBy = () => {
-    if (
-      searchedRef.current.value.length > 0 &&
-      filterRef.current.value === "position"
-    ) {
-      const filtered = employees.filter((employee) =>
-        employee.position
-          .toLowerCase()
-          .includes(searchedRef.current.value.toLowerCase())
+  const searchEmployee = (e) => {
+    setInputText(e.target.value);
+    const searchTerm = e.target.value.toLowerCase();
+    const filteredEmployees = copyEmployees.filter(
+      (empl) =>
+        empl.level.toLowerCase().includes(searchTerm) ||
+        empl.position.toLowerCase().includes(searchTerm)
+    );
+    setEmployees(filteredEmployees);
+  };
+
+  const filteredSelect = (e) => {
+    const option = e.target.value;
+    if (option === "Level") {
+      setEmployees((previous) =>
+        [...previous].sort((a, b) => a.level.localeCompare(b.level))
       );
-      setSearched(filtered);
-    }
-     else if (
-      searchedRef.current.value.length > 0 &&
-      filterRef.current.value === "level"
-    ) {
-      const filtered = employees.filter((employee) =>
-        employee.level
-          .toLowerCase()
-          .includes(searchedRef.current.value.toLowerCase())
+    } else if (option === "Position") {
+      setEmployees((previous) =>
+        [...previous].sort((a, b) => a.position.localeCompare(b.position))
       );
-      setSearched(filtered);
-    } else if (
-      searchedRef.current.value.length > 0 &&
-      filterRef.current.value === "firstN"
-    ) {
-      const filtered = employees.filter((employee) =>
-        employee.name
-          .split(" ")[0]
-          .toLowerCase()
-          .includes(searchedRef.current.value.toLowerCase())
+    } else if (option === "First name") {
+      setEmployees((previous) =>
+        [...previous].sort((a, b) => a.name.localeCompare(b.name))
       );
-      setSearched(filtered);
-    } else if (
-      searchedRef.current.value.length > 0 &&
-      filterRef.current.value === "lastN"
-    ) {
-      const filtered = employees.filter((employee) => {
-        if (employee.name.split(" ").length > 2) {
-          return employee.name
-            .split(" ")[2]
-            .toLowerCase()
-            .includes(searchedRef.current.value.toLowerCase());
-        } else {
-          return employee.name
-            .split(" ")[1]
-            .toLowerCase()
-            .includes(searchedRef.current.value.toLowerCase());
-        }
-      });
-      setSearched(filtered);
-    } else if (
-      searchedRef.current.value.length > 0 &&
-      filterRef.current.value === "midN"
-    ) {
-      const filtered = employees.filter((employee) => {
-        if (employee.name.split(" ").length > 2) {
-          return employee.name
-            .split(" ")[1]
-            .toLowerCase()
-            .includes(searchedRef.current.value.toLowerCase());
-        }
-        return null;
-      });
-      setSearched(filtered);
-    } else if (
-      searchedRef.current.value.length > 0 &&
-      filterRef.current.value === "default"
-    ) {
-      const filtered = employees.filter((employee) =>
-        employee.name
-          .split(" ")[0]
-          .toLowerCase()
-          .includes(searchedRef.current.value.toLowerCase())
+    } else if (option === "Last name") {
+      setEmployees((previous) =>
+        [...previous].sort((a, b) => {
+          const aLast = a.name.split(" ")[a.name.split(" ").length - 1];
+          const bLast = b.name.split(" ")[b.name.split(" ").length - 1];
+          return aLast.localeCompare(bLast);
+        })
       );
-      setSearched(filtered);
-    } else {
-      setSearched(employees);
+    } else if (option === "Middle name") {
+      setEmployees((previous) =>
+        [...previous].sort((a, b) => {
+          const aMiddle =
+            a.name.split(" ")[a.name.split(" ").length > 2 ? 1 : 1];
+          const bMiddle =
+            b.name.split(" ")[b.name.split(" ").length > 2 ? 1 : 1];
+          return aMiddle.localeCompare(bMiddle);
+        })
+      );
     }
   };
 
   return (
     <div>
-      <select name="options" id="options" ref={filterRef}>
-        <option value="default" disabled>
-          Filter the Search
+      <select onChange={filteredSelect}>
+        <option disabled selected>
+          Sort by:
         </option>
-        <option value="position">Position</option>
-        <option value="level">Level</option>
-        <option value="firstN">First Name</option>
-        <option value="lastN">Last Name</option>
-        <option value="midN">Middle Name</option>
+        <option>First name</option>
+        <option>Last name</option>
+        <option>Middle name</option>
+        <option>Level</option>
+        <option>Position</option>
       </select>
       <input
-        placeholder="Search..."
-        ref={searchedRef}
-        onChange={() => searchBy()}
-      ></input>
-      <EmployeeTable employees={searched} onDelete={handleDelete} />
+        type="text"
+        placeholder="Search by Level/Position"
+        value={inputText}
+        onChange={searchEmployee}
+      />
+      <EmployeeTable employees={employees} onDelete={handleDelete} />;
     </div>
   );
 };
