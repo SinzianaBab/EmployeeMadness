@@ -18,14 +18,27 @@ app.get("/api/employees/", async (req, res) => {
   return res.json(employees);
 });
 
+// app.get("/api/employees/", async (req, res) => {
+//   const search = req.query.search || ""; // Get the search query parameter
+//   const query = {
+//     $or: [
+//       { position: { $regex: search, $options: "i" } },
+//       { level: { $regex: search, $options: "i" } },
+//     ],
+//   };
+//   const employees = await EmployeeModel.find(query).sort({ created: "desc" });
+//   return res.json(employees);
+// });
+
+
 app.get("/api/employees/:id", async (req, res) => {
   const employee = await EmployeeModel.findById(req.params.id);
   return res.json(employee);
 });
 
+
 app.post("/api/employees/", async (req, res, next) => {
   const employee = req.body;
-
   try {
     const saved = await EmployeeModel.create(employee);
     return res.json(saved);
