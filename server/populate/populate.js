@@ -6,7 +6,11 @@ const mongoose = require("mongoose");
 const names = require("./names.json");
 const levels = require("./levels.json");
 const positions = require("./positions.json");
+const equipmentsAmount = require("./equipmentAmount.json");
+const equipmentsName = require("./equipmentName.json");
+const equipmentsType = require("./equipmentType.json");
 const EmployeeModel = require("../db/employee.model");
+const EquipmentModel = require("../db/equipment.model");
 
 const mongoUrl = process.env.MONGO_URL;
 
@@ -19,21 +23,40 @@ const pick = (from) => from[Math.floor(Math.random() * (from.length - 0))];
 
 const populateEmployees = async () => {
   await EmployeeModel.deleteMany({});
+  const equipments = await EquipmentModel.find();
 
-  const employees = names.map((name) => ({
-    name,
-    level: pick(levels),
-    position: pick(positions),
-  }));
+  const employees = names.map((name) => {
+    const employeeEquipments = equipments
+      .sort(() => 0.5 - Math.random()) 
+      .slice(0, Math.floor(Math.random() * equipments.length)); 
+    return {
+      name,
+      level: pick(levels),
+      position: pick(positions),
+      equipments: employeeEquipments,
+    };
+  });
 
   await EmployeeModel.create(...employees);
   console.log("Employees created");
+};
+
+const populateEquipments = async () => {
+  await EquipmentModel.deleteMany({});
+  const equipments = equipmentsAmount.map(() => ({
+    name: pick(equipmentsName),
+    type: pick(equipmentsType),
+    amount: pick(equipmentsAmount),
+  }));
+  await EquipmentModel.create(...equipments);
+  console.log("Equipments created");
 };
 
 const main = async () => {
   await mongoose.connect(mongoUrl);
 
   await populateEmployees();
+  await populateEquipments();
 
   await mongoose.disconnect();
 };

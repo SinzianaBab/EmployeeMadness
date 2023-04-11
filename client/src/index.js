@@ -12,7 +12,9 @@ import EmployeeUpdater from "./Pages/EmployeeUpdater";
 import "./index.css";
 import TableTest from "./Pages/TableTest";
 import FormTest from "./Pages/FormTest";
-
+import EquipmentCreator from "./Pages/EquipmentCreator";
+import EquipmentList from "./Pages/EquipmentList";
+import EquipmentUpdater from "./Pages/EquipmentUpdate";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -39,6 +41,17 @@ const router = createBrowserRouter([
         path: "/form-test",
         element: <FormTest />,
       },
+      {
+        path: "/createEquipment",
+        element: <EquipmentCreator />,
+      },
+      {
+        path: "/EquipmentList",
+        element: <EquipmentList />,
+      }, {
+        path: "/EquipmentUpdate/:id",
+        element: <EquipmentUpdater />,
+      }
     ],
   },
 ]);
