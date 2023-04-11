@@ -17,6 +17,7 @@ const EmployeeList = () => {
   const [employees, setEmployees] = useState(null);
   const [inputText, setInputText] = useState("");
   const [copyEmployees, setCopyEmployees] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
 
   const handleDelete = (id) => {
     deleteEmployee(id);
@@ -84,6 +85,18 @@ const EmployeeList = () => {
     }
   };
 
+    const incrementPage = () => {
+      console.log(pageNumber);
+      if (pageNumber * 10 >= employees.length) return;
+      setPageNumber(pageNumber + 1);
+    };
+
+    const decrementingPage = () => {
+      if (pageNumber > 1) {
+        setPageNumber(pageNumber - 1);
+      }
+    };
+
   return (
     <div>
       <select onChange={filteredSelect}>
@@ -102,7 +115,17 @@ const EmployeeList = () => {
         value={inputText}
         onChange={searchEmployee}
       />
-      <EmployeeTable employees={employees} onDelete={handleDelete} />;
+      <EmployeeTable
+        employees={employees.slice((pageNumber - 1) * 10, pageNumber * 10)}
+        // employees={employees}
+        onDelete={handleDelete}
+      />
+      ;
+      <div>
+        <button onClick={decrementingPage}>Previous</button>
+        <p>{pageNumber}</p>
+        <button onClick={incrementPage}>Next</button>
+      </div>
     </div>
   );
 };
