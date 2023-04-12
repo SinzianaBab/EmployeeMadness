@@ -6,7 +6,10 @@ const EmployeeTable = ({ employees, onDelete, onSort }) => (
     <table>
       <thead>
         <tr>
-          <th><button onClick={()=> onSort()} >  Name</button></th>
+          <th>Present</th>
+          <th>
+            <button onClick={() => onSort()}>Name</button>
+          </th>
           <th>Level</th>
           <th>Position</th>
           <th />
@@ -15,6 +18,13 @@ const EmployeeTable = ({ employees, onDelete, onSort }) => (
       <tbody>
         {employees.map((employee) => (
           <tr key={employee._id}>
+            <th>
+              <input
+                type="checkbox"
+                id="myCheck"
+                onClick={() => console.log("prezent")}
+              />
+            </th>
             <td>{employee.name}</td>
             <td>{employee.level}</td>
             <td>{employee.position}</td>
