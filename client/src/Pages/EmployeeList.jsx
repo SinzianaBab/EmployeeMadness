@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Loading from "../Components/Loading";
 import EmployeeTable from "../Components/EmployeeTable";
 
+
 const fetchEmployees = () => {
   return fetch("/api/employees").then((res) => res.json());
 };
@@ -18,7 +19,7 @@ const EmployeeList = () => {
   const [inputText, setInputText] = useState("");
   const [copyEmployees, setCopyEmployees] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
-
+const [sortAsc, setSortAsc] = useState(false);
   const handleDelete = (id) => {
     deleteEmployee(id);
 
@@ -26,6 +27,21 @@ const EmployeeList = () => {
       return employees.filter((employee) => employee._id !== id);
     });
   };
+
+  const handleClick = () => {
+if (sortAsc === true) {
+      setEmployees((previous) =>
+        [...previous].sort((a, b) => b.name.localeCompare(a.name))
+      );
+      setSortAsc(false);
+    } else if (sortAsc === false) {
+      setEmployees((previous) =>
+        [...previous].sort((a, b) => a.name.localeCompare(b.name))
+      );
+      setSortAsc(true);
+    }
+  }
+
 
   useEffect(() => {
     fetchEmployees().then((employees) => {
@@ -120,6 +136,7 @@ const EmployeeList = () => {
         employees={employees.slice((pageNumber - 1) * 10, pageNumber * 10)}
         // employees={employees}
         onDelete={handleDelete}
+        onSort={handleClick}
       />
       ;
       <div>
