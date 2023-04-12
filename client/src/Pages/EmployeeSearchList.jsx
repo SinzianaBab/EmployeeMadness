@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import Loading from "../Components/Loading";
 import EmployeeTable from "../Components/EmployeeTable";
+import { useParams } from "react-router-dom";
 
-const fetchEmployees = () => {
-  return fetch("/api/employees").then((res) => res.json());
+const fetchEmployees = (name) => {
+  const url = name ? `/employees/${name}` : "/api/employees";
+  return fetch(url).then((res) => res.json());
 };
+
 
 const deleteEmployee = (id) => {
   return fetch(`/api/employees/${id}`, { method: "DELETE" }).then((res) =>
@@ -12,12 +15,13 @@ const deleteEmployee = (id) => {
   );
 };
 
-const EmployeeList = () => {
+const EmployeeSearchList = () => {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState(null);
   const [inputText, setInputText] = useState("");
   const [copyEmployees, setCopyEmployees] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
+const { search } = useParams();
 
   const handleDelete = (id) => {
     deleteEmployee(id);
@@ -27,13 +31,14 @@ const EmployeeList = () => {
     });
   };
 
-  useEffect(() => {
-    fetchEmployees().then((employees) => {
-      setLoading(false);
-      setEmployees(employees);
-      setCopyEmployees(employees);
-    });
-  }, []);
+
+useEffect(() => {
+  fetchEmployees(search).then((employees) => {
+    setLoading(false);
+    setEmployees(employees);
+    setCopyEmployees(employees);
+  });
+}, [search]);
 
 
   if (loading) {
@@ -131,4 +136,4 @@ const EmployeeList = () => {
   );
 };
 
-export default EmployeeList;
+export default EmployeeSearchList;
