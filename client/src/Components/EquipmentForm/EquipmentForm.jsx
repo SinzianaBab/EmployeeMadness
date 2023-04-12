@@ -32,8 +32,8 @@ const EquipmentForm = ({ onSave, disabled, equipment, onCancel }) => {
         <label htmlFor="level">Type:</label>
         <input
           defaultValue={equipment ? equipment.type : null}
-          name="level"
-          id="level"
+          name="type"
+          id="type"
         />
       </div>
 
@@ -41,8 +41,8 @@ const EquipmentForm = ({ onSave, disabled, equipment, onCancel }) => {
         <label htmlFor="position">Amount:</label>
         <input
           defaultValue={equipment ? equipment.amount : null}
-          name="position"
-          id="position"
+          name="amount"
+          id="amount"
         />
       </div>
 

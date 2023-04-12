@@ -51,7 +51,11 @@ const router = createBrowserRouter([
       }, {
         path: "/EquipmentUpdate/:id",
         element: <EquipmentUpdater />,
-      }
+      },
+      // {
+      //   path: "Employees/:search",
+      //   element: <EmployeeList />,
+      // },
     ],
   },
 ]);

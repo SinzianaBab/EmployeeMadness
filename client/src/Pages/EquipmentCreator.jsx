@@ -12,6 +12,7 @@ const createEquipment = (equipment) => {
   }).then((res) => res.json());
 };
 
+
 const EquipmentCreator = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -21,7 +22,7 @@ const EquipmentCreator = () => {
 
     createEquipment(equipment).then(() => {
       setLoading(false);
-      navigate("/");
+      navigate("/EquipmentList");
     });
   };
 
