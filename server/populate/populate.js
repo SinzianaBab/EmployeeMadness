@@ -11,6 +11,9 @@ const equipmentsName = require("./equipmentName.json");
 const equipmentsType = require("./equipmentType.json");
 const EmployeeModel = require("../db/employee.model");
 const EquipmentModel = require("../db/equipment.model");
+const BrandsModel = require("../db/brand.model");
+const brands = require("./favBrands.json");
+
 
 const mongoUrl = process.env.MONGO_URL;
 
@@ -21,42 +24,39 @@ if (!mongoUrl) {
 
 const pick = (from) => from[Math.floor(Math.random() * (from.length - 0))];
 
-// const populateEmployees = async () => {
-//   await EmployeeModel.deleteMany({});
-//   const equipments = await EquipmentModel.find();
 
-//   const employees = names.map((name) => {
-//     // const employeeEquipments = equipments
-//     //   .sort(() => 0.5 - Math.random())
-//     //   .slice(0, Math.floor(Math.random() * equipments.length))
-//     //   .map((equipment)=> equipment.name);
-//     return {
-//       name,
-//       level: pick(levels),
-//       position: pick(positions),
-//       equipments: pick(equipmentsName),
-//     };
-//   });
+const populateEquipments = async () => {
+  await EquipmentModel.deleteMany({});
+  const equipments = equipmentsName.map((name) => ({
+    name: name,
+    type: pick(equipmentsType),
+    amount: pick(equipmentsAmount),
+  }));
+  await EquipmentModel.create(...equipments);
+  console.log("Equipments created");
+};
 
-//   await EmployeeModel.create(...employees);
-//   console.log("Employees created");
-// };
+const populateBrands = async () => {
+  await BrandsModel.deleteMany({});
+  const favs = brands.map((name) => ({
+    name: name,
+  }));
+  await BrandsModel.create(...favs);
+  console.log("Brands created");
+};
 
 const populateEmployees = async () => {
   await EmployeeModel.deleteMany({});
   const equipments = await EquipmentModel.find();
-
+const favBrands = await BrandsModel.find();
   const employees = names.map((name) => {
-    const employeeEquipments = equipments
-      .sort(() => 0.5 - Math.random())
-      .slice(0, Math.floor(Math.random() * equipments.length))
-      .map((equipment) => equipment._id); // use the equipment id
 
     return {
       name,
       level: pick(levels),
       position: pick(positions),
-      equipment: pick(equipmentsName), // use the equipment ids array
+      equipment: pick(equipments),
+      brand: pick(favBrands),
     };
   });
 
@@ -66,24 +66,12 @@ const populateEmployees = async () => {
 
 
 
-
-const populateEquipments = async () => {
-  await EquipmentModel.deleteMany({});
-  const equipments = equipmentsAmount.map(() => ({
-    name: pick(equipmentsName),
-    type: pick(equipmentsType),
-    amount: pick(equipmentsAmount),
-  }));
-  await EquipmentModel.create(...equipments);
-  console.log("Equipments created");
-};
-
 const main = async () => {
   await mongoose.connect(mongoUrl);
 
-  await populateEmployees();
   await populateEquipments();
-// await populateEmployeesWithEquipments();
+await populateBrands();
+  await populateEmployees();
   await mongoose.disconnect();
 };
 

@@ -130,9 +130,7 @@ const EmployeeList = () => {
     <div>
       <select onChange={filteredSelect}>
         {/* <option disabled selected> */}
-        <option defaultValue>
-          Sort by:
-        </option>
+        <option defaultValue>Sort by:</option>
         <option>First name</option>
         <option>Last name</option>
         <option>Middle name</option>
@@ -152,10 +150,14 @@ const EmployeeList = () => {
         onAbsent={handleAbsent}
       />
       ;
-      <div>
-        <button onClick={decrementingPage}>Previous</button>
+      <div className="pagination-btns">
+        <button onClick={decrementingPage} className="btns-prev">
+          Previous
+        </button>
         <p>{pageNumber}</p>
-        <button onClick={incrementPage}>Next</button>
+        <button onClick={incrementPage} className="btns-prev">
+          Next
+        </button>
       </div>
     </div>
   );

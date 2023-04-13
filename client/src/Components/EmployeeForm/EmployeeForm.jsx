@@ -10,8 +10,15 @@ const EmployeeForm = ({ onSave, disabled, employee, onCancel, equipment}) => {
       return acc;
     }, {});
 
+ const equipSelect = e.target.elements.equipment;
+ const equipOption = equipSelect.options[equipSelect.selectedIndex];
+ const equipValue = equipOption.value;
+ employee.equipment = equipValue;
+
     return onSave(employee);
   };
+
+       
 
   return (
     <form className="EmployeeForm" onSubmit={onSubmit}>
@@ -46,19 +53,27 @@ const EmployeeForm = ({ onSave, disabled, employee, onCancel, equipment}) => {
         />
       </div>
       <div className="control">
-        <label htmlFor="position">Equipment:</label>
-        <select name="equipment" id="equipment">
-          <option value="">Select Equipment</option>
-          {equipment && equipment.map((equipment) => (
-            <option key={equipment._id} value={equipment.name}>
-              {equipment.name}
-            </option>
-          ))}
+        <select
+          defaultValue={employee ? employee.equipment : null}
+          name="equipment"
+        >
+          <option value={employee.equipment} key={employee.equipment}>
+            {employee && equipment
+              ? equipment.find(
+                  (equipment) => equipment._id === employee.equipment
+                ).name
+              : null}
+          </option>
+
+          {equipment
+            ?.filter((eq) => eq._id !== employee.equipment)
+            .map((equipment) => (
+              <option value={equipment._id} key={equipment._id}>
+                {equipment.name}
+              </option>
+            ))}
         </select>
       </div>
-
-      
-
       <div className="buttons">
         <button type="submit" disabled={disabled}>
           {employee ? "Update Employee" : "Create Employee"}
