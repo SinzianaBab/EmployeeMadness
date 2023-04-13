@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "./EmployeeTable.css";
 
-const EmployeeTable = ({ employees, onDelete, onSort }) => (
+const EmployeeTable = ({ employees, onDelete, onSort, onAbsent }) => (
   <div className="EmployeeTable">
     <table>
       <thead>
@@ -12,31 +12,34 @@ const EmployeeTable = ({ employees, onDelete, onSort }) => (
           </th>
           <th>Level</th>
           <th>Position</th>
+          <th>Equipment</th>
           <th />
         </tr>
       </thead>
       <tbody>
         {employees.map((employee) => (
-          <tr key={employee._id}>
-            <th>
-              <input
-                type="checkbox"
-                id="myCheck"
-                onClick={() => console.log("prezent")}
-              />
-            </th>
-            <td>{employee.name}</td>
-            <td>{employee.level}</td>
-            <td>{employee.position}</td>
-            <td>
-              <Link to={`/update/${employee._id}`}>
-                <button type="button">Update</button>
-              </Link>
-              <button type="button" onClick={() => onDelete(employee._id)}>
-                Delete
-              </button>
-            </td>
-          </tr>
+              <tr key={employee._id}>
+                <th>
+                  <input
+                    defaultChecked={employee.present}
+                    type="checkbox"
+                    id="myCheck"
+                    onClick={() => onAbsent(employee)}
+                  />
+                </th>
+                <td>{employee.name}</td>
+                <td>{employee.level}</td>
+                <td>{employee.position}</td>
+                <td>{ employee.equipment}</td>
+                <td>
+                  <Link to={`/update/${employee._id}`}>
+                    <button type="button">Update</button>
+                  </Link>
+                  <button type="button" onClick={() => onDelete(employee._id)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
         ))}
       </tbody>
     </table>

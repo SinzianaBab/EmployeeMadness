@@ -21,25 +21,51 @@ if (!mongoUrl) {
 
 const pick = (from) => from[Math.floor(Math.random() * (from.length - 0))];
 
+// const populateEmployees = async () => {
+//   await EmployeeModel.deleteMany({});
+//   const equipments = await EquipmentModel.find();
+
+//   const employees = names.map((name) => {
+//     // const employeeEquipments = equipments
+//     //   .sort(() => 0.5 - Math.random())
+//     //   .slice(0, Math.floor(Math.random() * equipments.length))
+//     //   .map((equipment)=> equipment.name);
+//     return {
+//       name,
+//       level: pick(levels),
+//       position: pick(positions),
+//       equipments: pick(equipmentsName),
+//     };
+//   });
+
+//   await EmployeeModel.create(...employees);
+//   console.log("Employees created");
+// };
+
 const populateEmployees = async () => {
   await EmployeeModel.deleteMany({});
   const equipments = await EquipmentModel.find();
 
   const employees = names.map((name) => {
     const employeeEquipments = equipments
-      .sort(() => 0.5 - Math.random()) 
-      .slice(0, Math.floor(Math.random() * equipments.length)); 
+      .sort(() => 0.5 - Math.random())
+      .slice(0, Math.floor(Math.random() * equipments.length))
+      .map((equipment) => equipment._id); // use the equipment id
+
     return {
       name,
       level: pick(levels),
       position: pick(positions),
-      equipments: employeeEquipments,
+      equipment: pick(equipmentsName), // use the equipment ids array
     };
   });
 
   await EmployeeModel.create(...employees);
   console.log("Employees created");
 };
+
+
+
 
 const populateEquipments = async () => {
   await EquipmentModel.deleteMany({});
@@ -57,7 +83,7 @@ const main = async () => {
 
   await populateEmployees();
   await populateEquipments();
-
+// await populateEmployeesWithEquipments();
   await mongoose.disconnect();
 };
 

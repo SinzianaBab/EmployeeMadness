@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 import Loading from "../Components/Loading";
 import EmployeeTable from "../Components/EmployeeTable";
-import { useParams } from "react-router-dom";
 
-const fetchEmployees = (name) => {
-  const url = name ? `/employees/${name}` : "/api/employees";
-  return fetch(url).then((res) => res.json());
+const fetchEmployees = () => {
+  return fetch("/api/employees/absent").then((res) => res.json());
 };
-
 
 const deleteEmployee = (id) => {
   return fetch(`/api/employees/${id}`, { method: "DELETE" }).then((res) =>
@@ -15,13 +12,14 @@ const deleteEmployee = (id) => {
   );
 };
 
-const EmployeeSearchList = () => {
+const EmployeeAbsentList = () => {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState(null);
   const [inputText, setInputText] = useState("");
   const [copyEmployees, setCopyEmployees] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const { search } = useParams();
+  const [sortAsc, setSortAsc] = useState(false);
+  const [isPresent, setIsPresent] = useState(false);
 
   const handleDelete = (id) => {
     deleteEmployee(id);
@@ -30,15 +28,39 @@ const EmployeeSearchList = () => {
     });
   };
 
+  const handleClick = () => {
+    if (sortAsc === true) {
+      setEmployees((previous) =>
+        [...previous].sort((a, b) => b.name.localeCompare(a.name))
+      );
+      setSortAsc(false);
+    } else if (sortAsc === false) {
+      setEmployees((previous) =>
+        [...previous].sort((a, b) => a.name.localeCompare(b.name))
+      );
+      setSortAsc(true);
+    }
+  };
 
-useEffect(() => {
-  fetchEmployees(search).then((employees) => {
-    setLoading(false);
-    setEmployees(employees);
-    setCopyEmployees(employees);
-  });
-}, [search]);
+  const handleAbsent = (employee) => {
+    employee.present = !employee.present;
+    setIsPresent(!isPresent);
+    return fetch(`/api/employees/${employee._id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(employee),
+    }).then((res) => res.json());
+  };
 
+  useEffect(() => {
+    fetchEmployees().then((employees) => {
+      setLoading(false);
+      setEmployees(employees);
+      setCopyEmployees(employees);
+    });
+  }, [isPresent]);
 
   if (loading) {
     return <Loading />;
@@ -90,17 +112,17 @@ useEffect(() => {
     }
   };
 
-    const incrementPage = () => {
-      console.log(pageNumber);
-      if (pageNumber * 10 >= employees.length) return;
-      setPageNumber(pageNumber + 1);
-    };
+  const incrementPage = () => {
+    console.log(pageNumber);
+    if (pageNumber * 10 >= employees.length) return;
+    setPageNumber(pageNumber + 1);
+  };
 
-    const decrementingPage = () => {
-      if (pageNumber > 1) {
-        setPageNumber(pageNumber - 1);
-      }
-    };
+  const decrementingPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber(pageNumber - 1);
+    }
+  };
 
   return (
     <div>
@@ -124,6 +146,9 @@ useEffect(() => {
         employees={employees.slice((pageNumber - 1) * 10, pageNumber * 10)}
         // employees={employees}
         onDelete={handleDelete}
+        onSort={handleClick}
+        // onPresent={handlePresent}
+        onAbsent={handleAbsent}
       />
       ;
       <div>
@@ -135,4 +160,4 @@ useEffect(() => {
   );
 };
 
-export default EmployeeSearchList;
+export default EmployeeAbsentList;

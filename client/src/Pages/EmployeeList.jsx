@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import Loading from "../Components/Loading";
 import EmployeeTable from "../Components/EmployeeTable";
 
-
 const fetchEmployees = () => {
   return fetch("/api/employees").then((res) => res.json());
 };
+
 
 const deleteEmployee = (id) => {
   return fetch(`/api/employees/${id}`, { method: "DELETE" }).then((res) =>
@@ -19,17 +19,16 @@ const EmployeeList = () => {
   const [inputText, setInputText] = useState("");
   const [copyEmployees, setCopyEmployees] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
-const [sortAsc, setSortAsc] = useState(false);
+  const [sortAsc, setSortAsc] = useState(false);
   const handleDelete = (id) => {
     deleteEmployee(id);
-
     setEmployees((employees) => {
       return employees.filter((employee) => employee._id !== id);
     });
   };
 
   const handleClick = () => {
-if (sortAsc === true) {
+    if (sortAsc === true) {
       setEmployees((previous) =>
         [...previous].sort((a, b) => b.name.localeCompare(a.name))
       );
@@ -40,6 +39,21 @@ if (sortAsc === true) {
       );
       setSortAsc(true);
     }
+  };
+
+
+  
+  const handleAbsent = (employee) => {
+    console.log(employee.name);
+    employee.present = !employee.present;
+        return fetch(`/api/employees/${employee._id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(employee),
+        }).then((res) => res.json());
+
   }
 
 
@@ -50,7 +64,6 @@ if (sortAsc === true) {
       setCopyEmployees(employees);
     });
   }, []);
-
 
   if (loading) {
     return <Loading />;
@@ -102,22 +115,22 @@ if (sortAsc === true) {
     }
   };
 
-    const incrementPage = () => {
-      console.log(pageNumber);
-      if (pageNumber * 10 >= employees.length) return;
-      setPageNumber(pageNumber + 1);
-    };
+  const incrementPage = () => {
+    if (pageNumber * 10 >= employees.length) return;
+    setPageNumber(pageNumber + 1);
+  };
 
-    const decrementingPage = () => {
-      if (pageNumber > 1) {
-        setPageNumber(pageNumber - 1);
-      }
-    };
+  const decrementingPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber(pageNumber - 1);
+    }
+  };
 
   return (
     <div>
       <select onChange={filteredSelect}>
-        <option disabled selected>
+        {/* <option disabled selected> */}
+        <option defaultValue>
           Sort by:
         </option>
         <option>First name</option>
@@ -134,9 +147,9 @@ if (sortAsc === true) {
       />
       <EmployeeTable
         employees={employees.slice((pageNumber - 1) * 10, pageNumber * 10)}
-        // employees={employees}
         onDelete={handleDelete}
         onSort={handleClick}
+        onAbsent={handleAbsent}
       />
       ;
       <div>
@@ -148,4 +161,5 @@ if (sortAsc === true) {
   );
 };
 
-export default EmployeeList;
+export default EmployeeList 
+

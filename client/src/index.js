@@ -9,6 +9,7 @@ import EmployeeList from "./Pages/EmployeeList";
 import EmployeeCreator from "./Pages/EmployeeCreator";
 import EmployeeUpdater from "./Pages/EmployeeUpdater";
 import EmployeeSearchList from "./Pages/EmployeeSearchList";
+import AbsentEmployees from "./Pages/AbsentEmployeesList";
 import "./index.css";
 import TableTest from "./Pages/TableTest";
 import FormTest from "./Pages/FormTest";
@@ -48,13 +49,18 @@ const router = createBrowserRouter([
       {
         path: "/EquipmentList",
         element: <EquipmentList />,
-      }, {
+      },
+      {
         path: "/EquipmentUpdate/:id",
         element: <EquipmentUpdater />,
       },
       {
         path: "Employees/:search",
         element: <EmployeeSearchList />,
+      },
+      {
+        path: "/absents",
+        element: <AbsentEmployees />,
       },
     ],
   },

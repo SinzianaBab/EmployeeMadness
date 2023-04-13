@@ -12,13 +12,24 @@ const createEmployee = (employee) => {
   }).then((res) => res.json());
 };
 
+const fetchEquipments = () => {
+  return fetch("/api/equipments").then((res) => res.json());
+};
+
+
 const EmployeeCreator = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [equipment, setEquipment] = useState(null);
+
+
+      fetchEquipments().then((equipment) => {
+        setEquipment(equipment);
+        setLoading(false);
+      });
 
   const handleCreateEmployee = (employee) => {
     setLoading(true);
-
     createEmployee(employee)
       .then(() => {
         setLoading(false);
@@ -31,6 +42,7 @@ const EmployeeCreator = () => {
       onCancel={() => navigate("/")}
       disabled={loading}
       onSave={handleCreateEmployee}
+      equipment={equipment}
     />
   );
 };

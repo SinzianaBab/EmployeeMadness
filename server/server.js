@@ -21,6 +21,11 @@ app.get("/api/employees/", async (req, res) => {
   return res.json(employees);
 });
 
+app.get("/api/employees/absent", async (req, res) => {
+  const employee = await EmployeeModel.find({ present: false }).sort({created: "desc"});
+  return res.json(employee);
+});
+
 app.get("/api/employees/:id", async (req, res) => {
   const employee = await EmployeeModel.findById(req.params.id);
   return res.json(employee);
@@ -45,14 +50,6 @@ app.get("/employees/:name", async (req, res) => {
   });
   return res.json(employees);
 });
-
-// app.get("/api/employees/:name?", async (req, res) => {
-//   const search = req.params.name || "";
-//   const employees = await EmployeeModel.find({
-//     name: { $regex: new RegExp(search, "i") },
-//   });
-//   return res.json(employees);
-// });
 
 
 app.post("/api/employees/", async (req, res, next) => {
