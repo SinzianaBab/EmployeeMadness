@@ -16,25 +16,32 @@ const fetchEquipments = () => {
   return fetch("/api/equipments").then((res) => res.json());
 };
 
+const fetchBrands = () => {
+  return fetch("/api/brands").then((res) => res.json());
+};
 
 const EmployeeCreator = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [equipment, setEquipment] = useState(null);
+  const [brands, setBrands] = useState(null);
 
+  fetchEquipments().then((equipment) => {
+    setEquipment(equipment);
+    setLoading(false);
+  });
 
-      fetchEquipments().then((equipment) => {
-        setEquipment(equipment);
-        setLoading(false);
-      });
+  fetchBrands().then((brands) => {
+    setBrands(brands);
+    setLoading(false);
+  });
 
   const handleCreateEmployee = (employee) => {
     setLoading(true);
-    createEmployee(employee)
-      .then(() => {
-        setLoading(false);
-        navigate("/");
-      })
+    createEmployee(employee).then(() => {
+      setLoading(false);
+      navigate("/");
+    });
   };
 
   return (
@@ -43,6 +50,7 @@ const EmployeeCreator = () => {
       disabled={loading}
       onSave={handleCreateEmployee}
       equipment={equipment}
+      brand={brands}
     />
   );
 };
