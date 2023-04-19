@@ -15,6 +15,11 @@ const EmployeeSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Brands",
   },
+  color: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Colors",
+  },
+  salary: Number,
   present: {
     type: Boolean,
     default: false,

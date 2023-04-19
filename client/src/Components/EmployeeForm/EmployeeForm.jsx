@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const EmployeeForm = ({
   onSave,
   disabled,
@@ -5,7 +7,33 @@ const EmployeeForm = ({
   onCancel,
   equipment,
   brand,
+  color,
 }) => {
+  const [employeeLevel, setEmployeeLevel] = useState(
+    employee ? employee.level : null
+  );
+
+
+  function chooseLevel(e) {
+    const salary = e.target.value;
+    // if (!salary) {
+    //   setEmployeeLevel(employee ? employee.level : null)
+    // } else if (salary) {
+    if (salary <= 100) {
+      setEmployeeLevel("Junior");
+    } else if (100 < salary && salary <= 300) {
+      setEmployeeLevel("Medior");
+    } else if (300 < salary && salary <= 400) {
+      setEmployeeLevel("Senior");
+    } else if (400 < salary && salary <= 800) {
+      setEmployeeLevel("Expert");
+    } else if (salary > 800) {
+      setEmployeeLevel("Godlike");
+    }
+    // }
+  }
+
+
   const onSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -17,17 +45,10 @@ const EmployeeForm = ({
       return acc;
     }, {});
 
-    const equipSelect = e.target.elements.equipment;
-    const equipOption = equipSelect.options[equipSelect.selectedIndex];
-    const equipValue = equipOption.value;
-    employee.equipment = equipValue;
-
-    const brandSelect = e.target.elements.brand;
-    const brandOption = brandSelect.options[brandSelect.selectedIndex];
-    const brandValue = brandOption.value;
-    employee.brand = brandValue;
     return onSave(employee);
   };
+
+
 
   return (
     <form className="EmployeeForm" onSubmit={onSubmit}>
@@ -42,14 +63,15 @@ const EmployeeForm = ({
           id="name"
         />
       </div>
+
       <div className="control">
         <label htmlFor="level">Level:</label>
         <input
-          defaultValue={employee ? employee.level : null}
-          name="level"
-          id="level"
-        />
+          // defaultValue={employee ? employee.level : null}
+        value={employeeLevel}
+          name="level" id="level" disabled />
       </div>
+
       <div className="control">
         <label htmlFor="position">Position:</label>
         <input
@@ -58,89 +80,74 @@ const EmployeeForm = ({
           id="position"
         />
       </div>
-      {equipment && employee ? (
-        <div className="control">
-          <label htmlFor="position">Equipment:</label>
 
-          <select
-            defaultValue={employee ? employee.equipment : null}
-            name="equipment"
-          >
-            <option value={employee.equipment} key={employee.equipment}>
-              {employee && equipment
-                ? equipment.find(
-                    (equipment) => equipment._id === employee.equipment
-                  ).name
-                : null}
+      <div className="control">
+        <label htmlFor="salary">Salary:</label>
+        <input
+          defaultValue={employee ? employee.salary : null}
+          name="salary"
+          id="salary"
+          onChange={chooseLevel}
+        />
+      </div>
+
+      <div className="control">
+        <label htmlFor="equipment">Equipment:</label>
+        <select
+          name="equipment"
+          id="equipment"
+          defaultValue={employee?.equipment}
+        >
+          <option value="" disabled>
+            Select an equipment
+          </option>
+          {equipment?.map((eq) => (
+            <option
+              selected={employee?.equipment === eq.id}
+              key={eq._id}
+              value={eq._id}
+            >
+              {eq.name}
             </option>
+          ))}
+        </select>
+      </div>
 
-            {equipment
-              ?.filter((eq) => eq._id !== employee.equipment)
-              .map((equipment) => (
-                <option value={equipment._id} key={equipment._id}>
-                  {equipment.name}
-                </option>
-              ))}
-          </select>
-        </div>
-      ) : (
-        <div className="control">
-          <label htmlFor="position">Equipment:</label>
-
-          <select name="equipment">
-            <option value="Select an equipment" hidden>
-              Select an equipment
+      <div className="control">
+        <label htmlFor="brand">Favorite Brand:</label>
+        <select name="brand" id="brand">
+          <option value="" disabled="disabled" defaultValue={employee?.brand}>
+            Select a brand
+          </option>
+          {brand?.map((br) => (
+            <option
+              selected={employee?.brand === br._id}
+              key={br._id}
+              value={br._id}
+            >
+              {br.name}
             </option>
+          ))}
+        </select>
+      </div>
 
-            {equipment?.map((equipment) => (
-              <option value={equipment._id} key={equipment._id}>
-                {equipment.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {brand && employee ? (
-        <div className="control">
-          <label htmlFor="position">Equipment:</label>
-
-          <select
-            defaultValue={employee ? employee.equipment : null}
-            name="brand"
-          >
-            <option value={employee.brand} key={employee.brand}>
-              {employee && brand
-                ? brand.find((brand) => brand._id === employee.brand).name
-                : null}
+      <div className="control">
+        <label htmlFor="color">Favorite Color:</label>
+        <select name="color" id="color">
+          <option value="" disabled defaultValue={employee?.color}>
+            Select a color
+          </option>
+          {color?.map((co) => (
+            <option
+              selected={employee?.color === co._id}
+              key={co._id}
+              value={co._id}
+            >
+              {co.name}
             </option>
-
-            {brand
-              ?.filter((br) => br._id !== employee.brand)
-              .map((brand) => (
-                <option value={brand._id} key={brand._id}>
-                  {brand.name}
-                </option>
-              ))}
-          </select>
-        </div>
-      ) : (
-        <div className="control">
-          <label htmlFor="position">Brand:</label>
-
-          <select name="brand">
-            <option value="Select a brand" hidden>
-              Select a brand
-            </option>
-
-            {brand?.map((brand) => (
-              <option value={brand._id} key={brand._id}>
-                {brand.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+          ))}
+        </select>
+      </div>
 
       <div className="buttons">
         <button type="submit" disabled={disabled}>

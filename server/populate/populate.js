@@ -13,7 +13,8 @@ const EmployeeModel = require("../db/employee.model");
 const EquipmentModel = require("../db/equipment.model");
 const BrandsModel = require("../db/brand.model");
 const brands = require("./favBrands.json");
-
+const colors = require("./colors.json");
+const ColorsModel = require ("../db/color.model")
 
 const mongoUrl = process.env.MONGO_URL;
 
@@ -45,10 +46,20 @@ const populateBrands = async () => {
   console.log("Brands created");
 };
 
+const populateColors = async () => {
+  await ColorsModel.deleteMany({});
+  const favColors = colors.map((name) => ({
+    name: name,
+  }));
+  await ColorsModel.create(...favColors);
+  console.log("Colors created");
+};
+
 const populateEmployees = async () => {
   await EmployeeModel.deleteMany({});
   const equipments = await EquipmentModel.find();
-const favBrands = await BrandsModel.find();
+  const favBrands = await BrandsModel.find();
+  const favColors = await ColorsModel.find();
   const employees = names.map((name) => {
 
     return {
@@ -57,6 +68,7 @@ const favBrands = await BrandsModel.find();
       position: pick(positions),
       equipment: pick(equipments),
       brand: pick(favBrands),
+      color: pick(favColors)
     };
   });
 
@@ -70,8 +82,10 @@ const main = async () => {
   await mongoose.connect(mongoUrl);
 
   await populateEquipments();
-await populateBrands();
+  await populateBrands();
+   await populateColors();
   await populateEmployees();
+
   await mongoose.disconnect();
 };
 
